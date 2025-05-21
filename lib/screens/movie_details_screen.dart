@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../models/movie.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
@@ -8,9 +10,16 @@ class MovieDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isTablet = size.width > 600;
+    final padding = isTablet ? 24.0 : 16.0;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(movie.title),
+        title: Text(
+          movie.title,
+          style: TextStyle(fontSize: isTablet ? 24 : 20),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -18,73 +27,95 @@ class MovieDetailsScreen extends StatelessWidget {
           children: [
             Hero(
               tag: movie.imdbID,
-              child: Image.network(
-                movie.poster != 'N/A' ? movie.poster : 'https://via.placeholder.com/300x450',
-                height: 300,
+              child: CachedNetworkImage(
+                imageUrl: movie.poster != 'N/A' ? movie.poster : 'https://via.placeholder.com/300x450',
                 width: double.infinity,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: double.infinity,
+                    height: isTablet ? 400 : 300,
+                    color: Colors.white,
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                   width: double.infinity,
+                   height: isTablet ? 400 : 300,
+                   color: Colors.grey[200],
+                   child: const Icon(Icons.error, size: 50, color: Colors.grey),
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(padding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     movie.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Year: ${movie.year}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Type: ${movie.type}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Plot:',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: isTablet ? 32 : 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: isTablet ? 16 : 8),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: isTablet ? 24 : 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Year: ${movie.year}',
+                        style: TextStyle(fontSize: isTablet ? 18 : 16),
+                      ),
+                      SizedBox(width: isTablet ? 24 : 16),
+                      Icon(Icons.category, size: isTablet ? 24 : 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Type: ${movie.type}',
+                        style: TextStyle(fontSize: isTablet ? 18 : 16),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: isTablet ? 24 : 16),
+                  Text(
+                    'Plot',
+                    style: TextStyle(
+                      fontSize: isTablet ? 24 : 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: isTablet ? 12 : 8),
                   Text(
                     movie.plot,
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: isTablet ? 18 : 16),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Cast:',
+                  SizedBox(height: isTablet ? 24 : 16),
+                  Text(
+                    'Cast',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: isTablet ? 24 : 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: isTablet ? 12 : 8),
                   Text(
                     movie.cast,
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: isTablet ? 18 : 16),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Ratings:',
+                  SizedBox(height: isTablet ? 24 : 16),
+                  Text(
+                    'Ratings',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: isTablet ? 24 : 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: isTablet ? 12 : 8),
                   Text(
                     movie.ratings,
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: isTablet ? 18 : 16),
                   ),
                 ],
               ),

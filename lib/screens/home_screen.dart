@@ -25,17 +25,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final size = MediaQuery.of(context).size;
+    final isTablet = size.width > 600;
+    final padding = isTablet ? 24.0 : 16.0;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.movie_filter, color: Colors.white, size: 32),
-            const SizedBox(width: 8),
+            Icon(
+              Icons.movie_filter,
+              color: Colors.white,
+              size: isTablet ? 40 : 32,
+            ),
+            SizedBox(width: isTablet ? 12 : 8),
             Text(
               'Movie Explorer',
-              style: Theme.of(context).appBarTheme.titleTextStyle,
+              style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                    fontSize: isTablet ? 28 : 24,
+                  ),
             ),
           ],
         ),
@@ -44,26 +54,31 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: EdgeInsets.all(padding),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
                 color: colorScheme.primary.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(isTablet ? 24 : 16),
               ),
               child: TextField(
                 controller: _searchController,
+                style: TextStyle(fontSize: isTablet ? 18 : 16),
                 decoration: InputDecoration(
                   hintText: 'Search movies...',
-                  prefixIcon: const Icon(Icons.search),
+                  hintStyle: TextStyle(fontSize: isTablet ? 18 : 16),
+                  prefixIcon: Icon(Icons.search, size: isTablet ? 28 : 24),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear),
+                    icon: Icon(Icons.clear, size: isTablet ? 28 : 24),
                     onPressed: () {
                       _searchController.clear();
                     },
                   ),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: isTablet ? 20 : 16,
+                    horizontal: isTablet ? 20 : 16,
+                  ),
                 ),
                 onSubmitted: (query) {
                   if (query.isNotEmpty) {
@@ -85,16 +100,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline, color: colorScheme.error, size: 48),
-                        const SizedBox(height: 12),
+                        Icon(
+                          Icons.error_outline,
+                          color: colorScheme.error,
+                          size: isTablet ? 64 : 48,
+                        ),
+                        SizedBox(height: isTablet ? 16 : 12),
                         Text(
                           movieProvider.error,
-                          style: const TextStyle(color: Colors.red),
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: isTablet ? 18 : 16,
+                          ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: isTablet ? 16 : 12),
                         ElevatedButton.icon(
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Retry'),
+                          icon: Icon(Icons.refresh, size: isTablet ? 28 : 24),
+                          label: Text(
+                            'Retry',
+                            style: TextStyle(fontSize: isTablet ? 18 : 16),
+                          ),
                           onPressed: () {
                             if (_searchController.text.isNotEmpty) {
                               movieProvider.searchMovies(_searchController.text);
@@ -118,14 +143,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icon(
                           _selectedIndex == 1 ? Icons.favorite_border : Icons.movie,
                           color: colorScheme.primary,
-                          size: 48,
+                          size: isTablet ? 64 : 48,
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: isTablet ? 16 : 12),
                         Text(
                           _selectedIndex == 1
                               ? 'No favorite movies yet'
                               : 'Search for movies to get started',
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                            fontSize: isTablet ? 20 : 16,
+                          ),
                         ),
                       ],
                     ),
@@ -133,10 +160,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 return MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  crossAxisCount: isTablet ? 3 : 2,
+                  mainAxisSpacing: isTablet ? 12 : 8,
+                  crossAxisSpacing: isTablet ? 12 : 8,
+                  padding: EdgeInsets.all(isTablet ? 12 : 8),
                   itemCount: movies.length,
                   itemBuilder: (context, index) {
                     final movie = movies[index];
@@ -168,13 +195,13 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedIndex = index;
           });
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.movie),
+            icon: Icon(Icons.movie, size: isTablet ? 28 : 24),
             label: 'All Movies',
           ),
           NavigationDestination(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite, size: isTablet ? 28 : 24),
             label: 'Favorites',
           ),
         ],
